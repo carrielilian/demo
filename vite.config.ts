@@ -78,7 +78,7 @@ export default defineConfig(({ command }) => {
     ].filter(Boolean) as Plugin[],
 
     root: 'src',
-    publicDir: false,
+    publicDir: path.resolve(projectRoot, 'src/public'),
     appType: 'mpa',
 
     optimizeDeps: {

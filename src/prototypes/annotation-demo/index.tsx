@@ -2,6 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { AdminShell, AdminPageCard, AdminQueryBar, AdminButton, AdminListActionBar, AdminDataTable, AdminPagination, AdminDrawer, AdminDatePicker, AdminStatusTag, AdminToastViewport, type AdminTableColumn, type AdminToast } from './admin-template';
 import { beijing, editable, processDue, seed, storageKey, validate, type Reminder, type Status } from './reminder-model';
+import { MergedPage } from './merged-pages';
 import './style.css';
 const statuses: Status[] = ['待发送','已发送'];
 const tones = { 待发送: 'orange', 已发送: 'green' } as const;
@@ -86,7 +87,14 @@ export default function ReminderPage() {
   ];
   const form = panel?.kind === '新增提醒' || panel?.kind === '编辑';
   return <>
-    <AdminShell catalogOptions={[{ value: '4399', label: '四三九九', children: [{ value: 'platform', label: '平台管理' }] }]} catalogPath={catalog} onCatalogPathChange={setCatalog} menuTree={[{ id: 'auxiliary', label: '辅助功能管理', children: [{ id: 'reminders', label: '内部事项提醒', route: 'auxiliary/reminders' }] }]} defaultRoute="auxiliary/reminders" userLabel="演示管理员" renderPage={() => <AdminPageCard layout="list">
+    <AdminShell catalogOptions={[
+      { value: '4399', label: '四三九九', children: [{ value: 'platform', label: '平台管理' }, { value: 'game', label: '游戏管理' }] },
+      { value: 'business', label: '业务中台', children: [{ value: 'finance', label: '财务中心' }] },
+    ]} catalogPath={catalog} onCatalogPathChange={setCatalog} menuTree={[
+      { id: 'auxiliary', label: '辅助功能管理', children: [{ id: 'reminders', label: '内部事项提醒', route: 'auxiliary/reminders' }] },
+      { id: 'finance', label: '财务配置', children: [{ id: 'withdrawal-whitelist', label: '提现白名单设置', route: 'finance/withdrawal-whitelist' }, { id: 'withdrawal-rules', label: '不可提现判断条件', route: 'finance/withdrawal-rules' }] },
+      { id: 'game', label: '游戏管理', children: [{ id: 'compliance', label: '合规化管理', children: [{ id: 'contracts', label: '合同管理', route: 'game/compliance/contracts' }] }] },
+    ]} defaultRoute="auxiliary/reminders" userLabel="演示管理员" renderPage={route => route !== 'auxiliary/reminders' ? <MergedPage route={route} onCatalogChange={setCatalog} /> : <AdminPageCard layout="list">
       <AdminQueryBar>
         <input className="admin-control reminder-query" aria-label="提醒标题" placeholder="提醒标题" value={query.title} onChange={e => setQuery(v => ({ ...v, title: e.target.value }))} onCompositionStart={() => setComposing(true)} onCompositionEnd={() => setComposing(false)} />
         <AdminDatePicker type="daterange" value={range} startPlaceholder="提醒开始日期" endPlaceholder="提醒结束日期" clearable onChange={v => { setRange(Array.isArray(v) ? v : undefined); setPage(1); }} />
